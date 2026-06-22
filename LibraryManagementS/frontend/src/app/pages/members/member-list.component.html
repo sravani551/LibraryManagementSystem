@@ -1,0 +1,88 @@
+<div class="member-list-container">
+  <!-- Header -->
+  <div class="section-header">
+    <div>
+      <h2>👥 Members</h2>
+      <p class="subtitle">Manage library members</p>
+    </div>
+    <a routerLink="/members/new" class="btn btn-accent">
+      <span>➕</span> Add New Member
+    </a>
+  </div>
+
+  <!-- Error Message -->
+  <div *ngIf="errorMsg" class="alert error">
+    <span class="alert-icon">⚠️</span>
+    <span>{{ errorMsg }}</span>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <span>Loading members...</span>
+  </div>
+
+  <!-- Members Content -->
+  <div *ngIf="!isLoading">
+    <!-- Controls Bar -->
+    <div class="controls-bar">
+      <div class="control-group">
+        <label for="sort-dropdown">Sort by:</label>
+        <select id="sort-dropdown" (change)="setSort($event.target.value)" class="form-control">
+          <option value="name">Name (A-Z)</option>
+          <option value="membershipDate">Membership Date (Newest)</option>
+        </select>
+      </div>
+    </div>
+
+    <!-- Table -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Member ID</th>
+            <th>Name</th>
+            <th>Email</th>
+            <th>Membership Date</th>
+            <th>Actions</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let m of members">
+            <td class="text-muted">#{{ m.id }}</td>
+            <td class="member-name">{{ m.name }}</td>
+            <td>{{ m.email }}</td>
+            <td>{{ m.membershipDate | date: 'MMM dd, yyyy' }}</td>
+            <td>
+              <a [routerLink]="['/members', m.id, 'borrow-records']" class="btn btn-sm btn-secondary">
+                📚 History
+              </a>
+            </td>
+          </tr>
+          <tr *ngIf="members.length === 0">
+            <td colspan="5" class="empty-row">
+              <div class="empty-state">
+                <div class="empty-state-icon">📋</div>
+                <div class="empty-state-text">No members found</div>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page === 0" class="btn btn-sm">
+        ← Previous
+      </button>
+      <span class="page-info">
+        Page <strong>{{ page + 1 }}</strong> of <strong>{{ totalPages || 1 }}</strong>
+        <span style="margin-left: 10px; color: #666; font-size: 12px;">({{ totalElements }} total)</span>
+      </span>
+      <button (click)="nextPage()" [disabled]="page >= (totalPages - 1)" class="btn btn-sm">
+        Next →
+      </button>
+    </div>
+  </div>
+</div>

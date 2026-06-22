@@ -1,0 +1,74 @@
+<div class="add-member-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div>
+      <h2>➕ Add New Member</h2>
+      <p class="subtitle">Register a new library member</p>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <!-- Error Message -->
+    <div *ngIf="generalError" class="alert error">
+      <span class="alert-icon">⚠️</span>
+      <span>{{ generalError }}</span>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form-content">
+      <!-- Name Field -->
+      <div class="form-group">
+        <label for="name-input" class="form-label">
+          <span class="required">*</span> Member Name
+        </label>
+        <input id="name-input"
+               formControlName="name"
+               class="form-input"
+               placeholder="Enter member full name"
+               type="text" />
+        <div class="form-error" *ngIf="fieldErrors['name']">
+          <span>✗</span> {{ fieldErrors['name'] }}
+        </div>
+        <div class="form-error" *ngIf="form.controls.name.invalid && form.controls.name.touched">
+          <span>✗</span> Name is required
+        </div>
+      </div>
+
+      <!-- Email Field -->
+      <div class="form-group">
+        <label for="email-input" class="form-label">
+          <span class="required">*</span> Email Address
+        </label>
+        <input id="email-input"
+               formControlName="email"
+               class="form-input"
+               placeholder="Enter email address"
+               type="email" />
+        <div class="form-error" *ngIf="fieldErrors['email']">
+          <span>✗</span> {{ fieldErrors['email'] }}
+        </div>
+        <div class="form-error" *ngIf="form.controls.email.invalid && form.controls.email.touched">
+          <span>✗</span> A valid email is required
+        </div>
+        <small class="form-hint">We'll use this for important notifications</small>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          <span>✓</span> Create Member
+        </button>
+        <a routerLink="/members" class="btn btn-outline">
+          ← Cancel
+        </a>
+      </div>
+    </form>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <p><strong>📌 Note:</strong> All fields marked with <span class="required">*</span> are required. Members will receive a confirmation email after registration.</p>
+    </div>
+  </div>
+</div>
+

@@ -1,0 +1,100 @@
+<div class="add-book-container">
+  <!-- Header -->
+  <div class="form-header">
+    <div>
+      <h2>📘 Add New Book</h2>
+      <p class="subtitle">Add a new book to the library catalog</p>
+    </div>
+  </div>
+
+  <!-- Form Card -->
+  <div class="form-card">
+    <!-- Error Message -->
+    <div *ngIf="generalError" class="alert error">
+      <span class="alert-icon">⚠️</span>
+      <span>{{ generalError }}</span>
+    </div>
+
+    <!-- Form -->
+    <form [formGroup]="form" (ngSubmit)="submit()" class="form-content">
+      <!-- Title Field -->
+      <div class="form-group">
+        <label for="title-input" class="form-label">
+          <span class="required">*</span> Book Title
+        </label>
+        <input id="title-input"
+               formControlName="title"
+               class="form-input"
+               placeholder="Enter book title"
+               type="text" />
+        <div class="form-error" *ngIf="fieldErrors['title']">
+          <span>✗</span> {{ fieldErrors['title'] }}
+        </div>
+      </div>
+
+      <!-- Author Field -->
+      <div class="form-group">
+        <label for="author-input" class="form-label">
+          <span class="required">*</span> Author Name
+        </label>
+        <input id="author-input"
+               formControlName="author"
+               class="form-input"
+               placeholder="Enter author name"
+               type="text" />
+        <div class="form-error" *ngIf="fieldErrors['author']">
+          <span>✗</span> {{ fieldErrors['author'] }}
+        </div>
+      </div>
+
+      <!-- ISBN Field -->
+      <div class="form-group">
+        <label for="isbn-input" class="form-label">
+          <span class="required">*</span> ISBN Code
+        </label>
+        <input id="isbn-input"
+               formControlName="isbn"
+               class="form-input"
+               placeholder="ISBN-13: 978-0-123456-78-9"
+               type="text" />
+        <div class="form-error" *ngIf="fieldErrors['isbn']">
+          <span>✗</span> {{ fieldErrors['isbn'] }}
+        </div>
+        <small class="form-hint">International Standard Book Number</small>
+      </div>
+
+      <!-- Total Copies Field -->
+      <div class="form-group">
+        <label for="copies-input" class="form-label">
+          <span class="required">*</span> Total Copies
+        </label>
+        <input id="copies-input"
+               type="number"
+               formControlName="totalCopies"
+               class="form-input"
+               placeholder="Enter number of copies"
+               min="1" />
+        <div class="form-error" *ngIf="fieldErrors['totalCopies']">
+          <span>✗</span> {{ fieldErrors['totalCopies'] }}
+        </div>
+        <small class="form-hint">Number of physical copies available</small>
+      </div>
+
+      <!-- Form Actions -->
+      <div class="form-actions">
+        <button type="submit" class="btn btn-primary" [disabled]="form.invalid">
+          <span>✓</span> Add to Library
+        </button>
+        <a routerLink="/books" class="btn btn-outline">
+          ← Cancel
+        </a>
+      </div>
+    </form>
+
+    <!-- Info Box -->
+    <div class="info-box">
+      <p><strong>📌 Note:</strong> All fields marked with <span class="required">*</span> are required. Make sure to enter a valid ISBN code. All copies will be immediately available for borrowing.</p>
+    </div>
+  </div>
+</div>
+

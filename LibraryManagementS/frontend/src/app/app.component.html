@@ -1,0 +1,44 @@
+<div class="app-container">
+  <!-- Professional Header -->
+  <header>
+    <div class="header-top">
+      <div class="brand">
+        <span class="brand-icon">📚</span>
+        <div class="brand-text">
+          <div class="title">Library</div>
+          <div class="subtitle">Management System</div>
+        </div>
+      </div>
+      <div style="color: rgba(255,255,255,0.8); font-size: 13px; text-align: right;">
+        Professional Library Management<br>
+        <span style="font-size: 11px; opacity: 0.8;">v1.0.0</span>
+      </div>
+    </div>
+
+    <!-- Navigation Bar -->
+    <nav class="navbar">
+      <a routerLink="/home" routerLinkActive="active" [routerLinkActiveOptions]="{ exact: true }" class="nav-link">
+        <span>🏠</span>
+        <span>Dashboard</span>
+      </a>
+      <a routerLink="/members" routerLinkActive="active" class="nav-link">
+        <span>👥</span>
+        <span>Members</span>
+      </a>
+      <a routerLink="/books" routerLinkActive="active" class="nav-link">
+        <span>📖</span>
+        <span>Books</span>
+      </a>
+    </nav>
+  </header>
+
+  <!-- Main Content -->
+  <main>
+    <router-outlet></router-outlet>
+  </main>
+
+  <!-- Footer -->
+  <footer style="background: #1A1A1A; color: rgba(255,255,255,0.7); text-align: center; padding: 20px; margin-top: 40px; font-size: 12px;">
+    <p style="margin: 0;">© 2026 Library Management System. All Rights Reserved. | Professional Edition</p>
+  </footer>
+</div>

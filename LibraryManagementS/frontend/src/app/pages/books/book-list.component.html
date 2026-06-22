@@ -1,0 +1,107 @@
+<div class="book-list-container">
+  <!-- Header -->
+  <div class="section-header">
+    <div>
+      <h2>📖 Books</h2>
+      <p class="subtitle">Manage library books</p>
+    </div>
+    <a routerLink="/books/new" class="btn btn-accent">
+      <span>📘</span> Add New Book
+    </a>
+  </div>
+
+  <!-- Alert Messages -->
+  <div *ngIf="errorMsg" class="alert error">
+    <span class="alert-icon">⚠️</span>
+    <span>{{ errorMsg }}</span>
+  </div>
+
+  <div *ngIf="successMsg" class="alert success">
+    <span class="alert-icon">✓</span>
+    <span>{{ successMsg }}</span>
+  </div>
+
+  <!-- Loading State -->
+  <div *ngIf="isLoading" class="loading">
+    <div class="spinner"></div>
+    <span>Loading books...</span>
+  </div>
+
+  <!-- Books Content -->
+  <div *ngIf="!isLoading">
+    <!-- Search Bar -->
+    <div class="search-section">
+      <div class="search-box-wrapper">
+        <input [(ngModel)]="searchTerm"
+               placeholder="Search books by title..."
+               class="search-input"
+               (keyup.enter)="search()">
+        <button (click)="search()" class="btn btn-secondary">
+          🔍 Search
+        </button>
+      </div>
+    </div>
+
+    <!-- Books Table -->
+    <div class="table-wrapper">
+      <table>
+        <thead>
+          <tr>
+            <th>Title</th>
+            <th>Author</th>
+            <th>ISBN</th>
+            <th>Available</th>
+            <th>Total</th>
+            <th>Action</th>
+          </tr>
+        </thead>
+        <tbody>
+          <tr *ngFor="let b of books">
+            <td class="book-title">{{ b.title }}</td>
+            <td>{{ b.author }}</td>
+            <td class="text-muted">{{ b.isbn }}</td>
+            <td class="text-center">
+              <span [class.available]="b.availableCopies > 0"
+                    [class.unavailable]="b.availableCopies === 0"
+                    class="availability-badge">
+                {{ b.availableCopies }}
+              </span>
+            </td>
+            <td class="text-center">{{ b.totalCopies || '—' }}</td>
+            <td class="text-center">
+              <button (click)="borrow(b)"
+                      [disabled]="b.availableCopies === 0"
+                      class="btn btn-sm btn-secondary"
+                      [class.btn-disabled]="b.availableCopies === 0">
+                <span *ngIf="b.availableCopies > 0">📚 Borrow</span>
+                <span *ngIf="b.availableCopies === 0">— Not Available</span>
+              </button>
+            </td>
+          </tr>
+          <tr *ngIf="books.length === 0">
+            <td colspan="6" class="empty-row">
+              <div class="empty-state">
+                <div class="empty-state-icon">📚</div>
+                <div class="empty-state-text">No books found</div>
+                <p style="color: #999; font-size: 13px;">Add some books to get started</p>
+              </div>
+            </td>
+          </tr>
+        </tbody>
+      </table>
+    </div>
+
+    <!-- Pagination -->
+    <div class="pagination">
+      <button (click)="prevPage()" [disabled]="page === 0" class="btn btn-sm">
+        ← Previous
+      </button>
+      <span class="page-info">
+        Page <strong>{{ page + 1 }}</strong> of <strong>{{ totalPages || 1 }}</strong>
+      </span>
+      <button (click)="nextPage()" [disabled]="page >= (totalPages - 1)" class="btn btn-sm">
+        Next →
+      </button>
+    </div>
+  </div>
+</div>

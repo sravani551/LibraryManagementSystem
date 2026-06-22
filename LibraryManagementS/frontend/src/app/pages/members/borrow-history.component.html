@@ -1,0 +1,103 @@
+<div class="borrow-history-container">
+  <!-- Header -->
+  <div class="section-header">
+    <div>
+      <h2>📚 Borrow Records</h2>
+      <p class="subtitle">Member's borrowing history</p>
+    </div>
+    <a routerLink="/members" class="btn btn-secondary">
+      ← Back to Members
+    </a>
+  </div>
+
+  <!-- Alert Messages -->
+  <div *ngIf="errorMsg" class="alert error">
+    <span class="alert-icon">⚠️</span>
+    <span>{{ errorMsg }}</span>
+  </div>
+
+  <div *ngIf="successMsg" class="alert success">
+    <span class="alert-icon">✓</span>
+    <span>{{ successMsg }}</span>
+  </div>
+
+  <!-- Borrow Records Table -->
+  <div class="table-wrapper">
+    <table>
+      <thead>
+        <tr>
+          <th>Book Title</th>
+          <th>Borrowed Date</th>
+          <th>Returned Date</th>
+          <th>Status</th>
+          <th>Actions</th>
+        </tr>
+      </thead>
+      <tbody>
+        <tr *ngFor="let r of records" [class.borrowed]="!r.returnDate" [class.returned]="r.returnDate">
+          <td class="book-title">{{ r.bookTitle }}</td>
+          <td>{{ r.borrowDate | date: 'MMM dd, yyyy' }}</td>
+          <td>
+            <span *ngIf="r.returnDate" class="date-text">
+              {{ r.returnDate | date: 'MMM dd, yyyy' }}
+            </span>
+            <span *ngIf="!r.returnDate" class="date-pending">—</span>
+          </td>
+          <td>
+            <span *ngIf="r.returnDate" class="status-badge returned">
+              ✓ Returned
+            </span>
+            <span *ngIf="!r.returnDate" class="status-badge borrowed">
+              📚 Borrowed
+            </span>
+          </td>
+          <td class="text-center">
+            <button *ngIf="!r.returnDate"
+                    (click)="returnRecord(r)"
+                    class="btn btn-sm btn-danger">
+              ↩️ Return
+            </button>
+            <span *ngIf="r.returnDate" class="completed-text">Completed</span>
+          </td>
+        </tr>
+        <tr *ngIf="records.length === 0">
+          <td colspan="5" class="empty-row">
+            <div class="empty-state">
+              <div class="empty-state-icon">📭</div>
+              <div class="empty-state-text">No borrow records found</div>
+              <p style="color: #999; font-size: 13px;">This member hasn't borrowed any books yet</p>
+            </div>
+          </td>
+        </tr>
+      </tbody>
+    </table>
+  </div>
+
+  <!-- Summary -->
+  <div class="summary-section">
+    <div class="summary-card">
+      <div class="summary-icon">📚</div>
+      <div class="summary-content">
+        <div class="summary-number">{{ records.length }}</div>
+        <div class="summary-label">Total Records</div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">✓</div>
+      <div class="summary-content">
+        <div class="summary-number">{{ getReturnedCount() }}</div>
+        <div class="summary-label">Returned</div>
+      </div>
+    </div>
+
+    <div class="summary-card">
+      <div class="summary-icon">📖</div>
+      <div class="summary-content">
+        <div class="summary-number">{{ getBorrowedCount() }}</div>
+        <div class="summary-label">Currently Borrowed</div>
+      </div>
+    </div>
+  </div>
+</div>
+

@@ -1,7 +1,13 @@
 package com.example.library.exception;
 
+import org.springframework.dao.DataIntegrityViolationException;
+import org.springframework.dao.OptimisticLockingFailureException;
+
 import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
+import org.springframework.web.ErrorResponse;
+import org.slf4j.Logger;
+import org.slf4j.LoggerFactory;
 import org.springframework.web.bind.MethodArgumentNotValidException;
 import org.springframework.web.bind.annotation.RestControllerAdvice;
 import org.springframework.web.bind.annotation.ExceptionHandler;
@@ -16,6 +22,8 @@ import java.util.NoSuchElementException;
  */
 @RestControllerAdvice
 public class GlobalExceptionHandler {
+
+    private static final Logger log = LoggerFactory.getLogger(GlobalExceptionHandler.class);
 
     /**
      * Handle MethodArgumentNotValidException (validation errors).
@@ -44,7 +52,7 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(IllegalStateException.class)
     public ResponseEntity<Map<String, String>> handleIllegalStateException(IllegalStateException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put("message", ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.CONFLICT).body(error);
     }
@@ -58,9 +66,28 @@ public class GlobalExceptionHandler {
     @ExceptionHandler(NoSuchElementException.class)
     public ResponseEntity<Map<String, String>> handleNoSuchElementException(NoSuchElementException ex) {
         Map<String, String> error = new HashMap<>();
-        error.put("error", ex.getMessage());
+        error.put("message", ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    /**
+     * Unique-constraint violations (e.g. duplicate ISBN or member email) are client errors.
+     * Returns 409 Conflict instead of falling through to the generic 500 handler.
+     */
+    @ExceptionHandler(DataIntegrityViolationException.class)
+    public ResponseEntity<Map<String, String>> handleDataIntegrityViolation(DataIntegrityViolationException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("message", "A record with the same unique value (e.g. ISBN or email) already exists"));
+    }
+
+    /**
+     * A concurrent update won the race (e.g. two members borrowing the last copy at once).
+     */
+    @ExceptionHandler(OptimisticLockingFailureException.class)
+    public ResponseEntity<Map<String, String>> handleOptimisticLock(OptimisticLockingFailureException ex) {
+        return ResponseEntity.status(HttpStatus.CONFLICT)
+                .body(Map.of("message", "The record was modified concurrently, please retry"));
     }
 
     /**
@@ -71,9 +98,16 @@ public class GlobalExceptionHandler {
      */
     @ExceptionHandler(Exception.class)
     public ResponseEntity<Map<String, String>> handleGenericException(Exception ex) {
+        // Framework exceptions (malformed JSON, wrong path-variable type, unsupported method, ...)
+        // already know their correct 4xx status; don't turn them into a 500.
+        if (ex instanceof ErrorResponse errorResponse) {
+            String detail = errorResponse.getBody().getDetail();
+            return ResponseEntity.status(errorResponse.getStatusCode())
+                    .body(Map.of("message", detail != null ? detail : "Invalid request"));
+        }
+        log.error("Unhandled exception", ex);
         Map<String, String> error = new HashMap<>();
-        error.put("error", "Something went wrong");
-        
+        error.put("message", "Something went wrong");
         return ResponseEntity.status(HttpStatus.INTERNAL_SERVER_ERROR).body(error);
     }
 }

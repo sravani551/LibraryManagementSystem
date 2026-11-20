@@ -3,6 +3,7 @@ package com.example.library.controller;
 import com.example.library.dto.BorrowRecordResponse;
 import com.example.library.entity.BorrowRecord;
 import com.example.library.service.BorrowService;
+import org.springframework.http.HttpStatus;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
@@ -35,7 +36,7 @@ public class BorrowController {
             @PathVariable Long bookId) {
         
         BorrowRecord borrowRecord = borrowService.borrowBook(memberId, bookId);
-        return ResponseEntity.ok(new BorrowRecordResponse(borrowRecord));
+        return ResponseEntity.status(HttpStatus.CREATED).body(new BorrowRecordResponse(borrowRecord));
     }
 
     /**

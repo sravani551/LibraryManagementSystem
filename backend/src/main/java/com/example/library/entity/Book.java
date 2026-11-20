@@ -35,6 +35,10 @@ public class Book {
     @Column(nullable = false)
     private int availableCopies;
 
+    // Optimistic locking: two concurrent borrows of the last copy can't both succeed
+    @Version
+    private Long version;
+
     // One-to-many relationship with BorrowRecord
     @OneToMany(mappedBy = "book", cascade = CascadeType.ALL, orphanRemoval = true)
     private List<BorrowRecord> borrowRecords;

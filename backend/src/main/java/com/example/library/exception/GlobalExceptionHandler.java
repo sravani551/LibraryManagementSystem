@@ -4,6 +4,8 @@ import org.springframework.dao.DataIntegrityViolationException;
 import org.springframework.dao.OptimisticLockingFailureException;
 
 import org.springframework.http.HttpStatus;
+import org.springframework.http.converter.HttpMessageNotReadableException;
+import org.springframework.web.method.annotation.MethodArgumentTypeMismatchException;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.ErrorResponse;
 import org.slf4j.Logger;
@@ -69,6 +71,17 @@ public class GlobalExceptionHandler {
         error.put("message", ex.getMessage());
         
         return ResponseEntity.status(HttpStatus.NOT_FOUND).body(error);
+    }
+
+    /**
+     * Wrong path-variable type (e.g. /members/abc) or unreadable JSON body: client errors.
+     */
+    @ExceptionHandler({MethodArgumentTypeMismatchException.class, HttpMessageNotReadableException.class})
+    public ResponseEntity<Map<String, String>> handleBadRequest(Exception ex) {
+        String message = ex instanceof MethodArgumentTypeMismatchException m
+                ? "Invalid value for '" + m.getName() + "'"
+                : "Malformed request body";
+        return ResponseEntity.status(HttpStatus.BAD_REQUEST).body(Map.of("message", message));
     }
 
     /**

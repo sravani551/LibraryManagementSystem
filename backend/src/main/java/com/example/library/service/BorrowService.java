@@ -76,7 +76,7 @@ public class BorrowService {
     @Transactional
     public BorrowRecord returnBook(Long borrowRecordId) {
         // Find borrow record, throw exception if not found
-        BorrowRecord borrowRecord = borrowRecordRepository.findById(borrowRecordId)
+        BorrowRecord borrowRecord = borrowRecordRepository.findWithMemberAndBookById(borrowRecordId)
                 .orElseThrow(() -> new NoSuchElementException("Borrow record not found with id: " + borrowRecordId));
 
         // Check if book is already returned
@@ -101,6 +101,7 @@ public class BorrowService {
      * @param memberId the ID of the member
      * @return a list of borrow records
      */
+    @Transactional(readOnly = true)
     public List<BorrowRecord> getBorrowRecordsForMember(Long memberId) {
         return borrowRecordRepository.findByMemberId(memberId);
     }
